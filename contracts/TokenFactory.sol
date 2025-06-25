@@ -49,5 +49,3 @@ function getBeaconControllerAddress() external view returns (address) {
 
 
 }
-
-

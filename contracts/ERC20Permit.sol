@@ -16,7 +16,7 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
     error ERC2612InvalidNonce(address owner, uint256 expectedNonce); 
     constructor(string memory name) EIP712(name, "1") {}
 
-     function permit(
+      function permit(
         address owner,
         address spender,
         uint256 value,
@@ -29,7 +29,7 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
             revert ERC2612ExpiredSignature(deadline);
         }
 
-        uint256 currentNonce = nonces(owner); 
+        uint256 currentNonce = nonces(owner);
 
         bytes32 structHash = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, value, currentNonce, deadline));
         bytes32 hash = _hashTypedDataV4(structHash);
@@ -39,18 +39,10 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
         if (signer != owner) {
             revert ERC2612InvalidSigner(signer, owner);
         }
-        
 
-        uint256 expectedNonce = nonces(owner);
-         _useCheckedNonce(owner, currentNonce); 
+        _useCheckedNonce(owner, currentNonce);
 
         _approve(owner, spender, value);
- 
-        if (currentNonce != expectedNonce) {
-            revert ERC2612InvalidNonce(owner, expectedNonce); 
-        }
-
-       
 
     }
 
@@ -62,4 +54,3 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
         return _domainSeparatorV4();
     }
 }
-

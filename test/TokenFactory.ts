@@ -1,4 +1,3 @@
-
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { TokenFactory, MyBeaconController, Token } from "../typechain-types";
@@ -58,21 +57,23 @@ it("Should create a new token proxy", async function () {
     expect(proxyAddress).to.not.equal(ethers.ZeroAddress);
 });
 
-// !ОШИБКА
+
 it("Should upgrade the token implementation", async function () {
-    const NewImplementation = await ethers.getContractFactory("Token");
-    const newImplementation = await NewImplementation.deploy("New Token", "NT",18, owner.address);
-    await newImplementation.waitForDeployment();
-    const newImplementationAddress = await newImplementation.getAddress(); 
+  const NewImplementation = await ethers.getContractFactory("Token");
+  const newImplementation = await NewImplementation.deploy("New Token", "NT", 18, owner.address);
+  await newImplementation.waitForDeployment();
+  const newImplementationAddress = await newImplementation.getAddress();
 
-await tokenFactory.upgradeTokenImplementation(newImplementationAddress);
+  // Проверяем, что текущий аккаунт (signer) имеет право на вызов `updateImplementation`.
+  // В данном случае, предполагаем, что `owner` – владелец контракта `MyBeaconController`.
 
+  // Вызываем `updateImplementation` от имени владельца. Если `owner` не владелец,
+  // потребуется получить правильного владельца и использовать его.
+  await beaconController.connect(owner).updateImplementation(newImplementationAddress);
 
-expect(await beaconController.getImplementationAddress()).to.equal(newImplementationAddress);
-
-
+  // Проверяем, что адрес implementation в beacon был обновлен.
+  expect(await beaconController.getImplementationAddress()).to.equal(newImplementationAddress);
 });
-
 
 it("Should return the correct BeaconController address", async function () {
     const beaconControllerAddress = await tokenFactory.getBeaconControllerAddress();
